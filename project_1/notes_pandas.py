@@ -1,5 +1,4 @@
 
-
 # a while loop to loop through each item in the list
 i=0
 while( i != len(x) ):
@@ -245,8 +244,41 @@ df.where(df['Gold'] > 0)
 set_01 = df[df['Gold'] > 0]
 set_02 = df[(df['Gold'] > 0) | (df['Gold.1'] > 0)]
 
+# Indexing DataFrame
+# How to reset index for DataFrame
+
+df['country'] = df.index  # add a new column <country> in order to keep the <country> column after set_index
+df = df.set_index('Gold')
+df = df.set_index(['Gold', 'Silver'])
+
+df = df.reset_index()
 
 
+df = pd.read_csv('census.csv')
+
+columns_to_keep = ['STNAME',
+                   'CTYNAME',
+                   'BIRTHS2010',
+                   'BIRTHS2011',
+                   'BIRTHS2012',
+                   'BIRTHS2013',
+                   'BIRTHS2014',
+                   'BIRTHS2015',
+                   'POPESTIMATE2010',
+                   'POPESTIMATE2011',
+                   'POPESTIMATE2012',
+                   'POPESTIMATE2013',
+                   'POPESTIMATE2014',
+                   'POPESTIMATE2015']
+df = df[columns_to_keep]
+
+df['SUMLEV'].unique()
+
+df.loc[ [('Michigan', 'Washtenaw County'),
+         ('Michigan', 'Wayne County')] ]
+
+# Fill NA/NaN values using the specified method.
+df = df.fillna(method='ffill')
 
 
 
