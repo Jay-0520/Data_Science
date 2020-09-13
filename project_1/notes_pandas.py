@@ -121,8 +121,129 @@ a.argmin()
 r = np.arange(36)
 r.resize((6, 6))
 
+# be careful with copying and modifying arrays in NumPy!
 
-   
+r_copy = r.copy()
+
+
+############ < Pandas > ############
+
+animals = ['Tiger', 'Bear', 'Moose']
+pd.Series(animals)
+
+# 0    Tiger
+# 1     Bear
+# 2    Moose
+# dtype: object   
+
+sports = {'Archery': 'Bhutan',
+          'Golf': 'Scotland',
+          'Sumo': 'Japan',
+          'Taekwondo': 'South Korea'}
+s = pd.Series(sports)
+
+# Archery           Bhutan
+# Golf            Scotland
+# Sumo               Japan
+# Taekwondo    South Korea
+# dtype: object
+
+s = pd.Series(['Tiger', 'Bear', 'Moose'], index=['India', 'America', 'Canada'])
+
+# India      Tiger
+# America     Bear
+# Canada     Moose
+# dtype: object
+
+sports = {'Archery': 'Bhutan',
+          'Golf': 'Scotland',
+          'Sumo': 'Japan',
+          'Taekwondo': 'South Korea'}
+s = pd.Series(sports)
+
+# Archery           Bhutan
+# Golf            Scotland
+# Sumo               Japan
+# Taekwondo    South Korea
+# dtype: object
+
+s.iloc[3]
+#'South Korea'
+
+s.loc['Golf']
+#'Scotland'
+
+s[3]
+#'South Korea'
+
+s['Golf']
+#'Scotland'
+
+%%timeit -n 100
+summary = np.sum(s)
+#100 loops, best of 3: 1.15 ms per loop
+
+%%timeit -n 10
+s = pd.Series(np.random.randint(0,1000,10000))
+s+=2
+
+########## Pandas DataFrame ##########
+
+purchase_1 = pd.Series({'Name': 'Chris',
+                        'Item Purchased': 'Dog Food',
+                        'Cost': 22.50})
+purchase_2 = pd.Series({'Name': 'Kevyn',
+                        'Item Purchased': 'Kitty Litter',
+                        'Cost': 2.50})
+purchase_3 = pd.Series({'Name': 'Vinod',
+                        'Item Purchased': 'Bird Seed',
+                        'Cost': 5.00})
+df = pd.DataFrame([purchase_1, purchase_2, purchase_3], index=['Store 1', 'Store 1', 'Store 2'])
+
+
+df = pd.DataFrame({'Name': ['Chris', 'Kevyn', 'Vinod'],
+                   'Item Purchased': ['Dog Food', 'Kitty Litter', 'Bird Seed'],
+                   'Cost': [22.50, 2.5, 5.00]}, index= ['Store 1', 'Store 1', 'Store 2'])
+
+# access DataFrame
+df.loc['Store 2'] # loc is only for indexes; output series
+
+# Cost                      5
+# Item Purchased    Bird Seed
+# Name                  Vinod
+# Name: Store 2, dtype: object
+
+df.loc['Store 1', 'Cost'] # loc is only for indexes; output series
+df.loc['Store 1']['Cost']
+
+# Store 1    22.5
+# Store 1     2.5
+# Name: Cost, dtype: float64
+
+df['Cost'] # this is for accessing columns; output series
+
+# WITH loc, we can also output DataFrame
+df.loc[:,['Name', 'Cost']]
+
+df.drop('Store 1') # this drop rows containing "Store 1", and output DataFrame
+
+
+# Load csv file 
+df = pd.read_csv('olympics.csv', index_col = 0, skiprows=1)
+
+# DataFrame rename column names
+df.rename(columns={'old_name': 'new_name'}, inplace=True)
+
+
+# Create a boolean mask 
+df['Gold'] > 0
+
+# np.where function in DataFrame; Replace values where the condition is False
+df.where(df['Gold'] > 0)
+
+# select/crop out a subset from a DataFrame based on condition
+set_01 = df[df['Gold'] > 0]
+set_02 = df[(df['Gold'] > 0) | (df['Gold.1'] > 0)]
 
 
 
