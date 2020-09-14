@@ -280,6 +280,126 @@ df.loc[ [('Michigan', 'Washtenaw County'),
 # Fill NA/NaN values using the specified method.
 df = df.fillna(method='ffill')
 
+# For a DataFrame
+# Cost	Item Purchased	Name
+# Store 1	22.5	Sponge	Chris
+# Store 1	2.5	Kitty Litter	Kevyn
+# Store 2	5.0	Spoon	Filip
+
+df['Date'] = ['December 1', 'January 1', 'mid-May'] # This works
+df['Date'] = ['December 1', 'January 1'] # THIS OUTPUTS AN ERROR
+
+# HOWEVER, we can do this
+adf = df.reset_index()
+adf['Date'] = pd.Series({0: 'December 1', 2: 'mid-May'})
+
+df['Delivered'] = True # This works
+
+# How to merge two DataFrame
+pd.merge(staff_df, student_df, how='outer', left_index=True, right_index=True)
+pd.merge(staff_df, student_df, how='left', left_on='Name', right_on='Name') # <Name> is column name
+pd.merge(staff_df, student_df, how='inner', left_on=['First Name','Last Name'], right_on=['First Name','Last Name']) # <First Name> <Last Name> are column names
 
 
+# An interesting operation
 
+(df.where(df['SUMLEV']==50)
+    .dropna()
+    .set_index(['STNAME','CTYNAME'])
+    .rename(columns={'ESTIMATESBASE2010': 'Estimates Base 2010'}))
+# df.where() finds rows with <SUMLEV> == 40 and sets those rows with Nan values; and then dropna() delete those rows containing Nan values; 
+
+df = df[df['SUMLEV']==50]
+df.set_index(['STNAME','CTYNAME'], inplace=True)
+df.rename(columns={'ESTIMATESBASE2010': 'Estimates Base 2010'})
+# These command lines together do the same work as the code above does
+
+# *******************************************************************
+# *****************How to use some special Pandas functions *****************
+# *******************************************************************
+
+def min_max(row):
+    data = row[['POPESTIMATE2010',
+                'POPESTIMATE2011',
+                'POPESTIMATE2012',
+                'POPESTIMATE2013',
+                'POPESTIMATE2014',
+                'POPESTIMATE2015']]
+    return pd.Series({'min': np.min(data), 'max': np.max(data)})
+
+df.apply(min_max, axis=1)
+
+#		max	min
+# STNAME	CTYNAME		
+# Alabama	Autauga County	55347.0	 54660.0
+#               Baldwin County	203709.0 183193.0
+#               Barbour County	27341.0	 26489.0
+
+rows = ['POPESTIMATE2010',
+        'POPESTIMATE2011',
+        'POPESTIMATE2012',
+        'POPESTIMATE2013',
+        'POPESTIMATE2014',
+        'POPESTIMATE2015']
+df.apply(lambda x: np.max(x[rows]), axis=1)
+
+# STNAME     CTYNAME           
+# Alabama    Autauga County         55347.0
+#            Baldwin County        203709.0
+#            Barbour County         27341.0
+#            Bibb County            22861.0
+#            Blount County          57776.0
+#            Bullock County         10887.0
+
+%%timeit -n 1
+for group, frame in df.groupby('STNAME'): # This outputs a dictionary
+    avg = np.average(frame['CENSUS2010POP'])
+    print('Counties in state ' + group + ' have an average population of ' + str(avg))
+
+#*********** How to  use both apply and agg function ***********
+# type(df.groupby('STNAME')), with out: pandas.core.groupby.generic.DataFrameGroupBy
+df.groupby('STNAME').agg({'CENSUS2010POP': np.average, 'ESTIMATESBASE2010': np.max, 'REGION': np.min}) 
+
+df.set_index('STNAME').groupby(level=0)['POPESTIMATE2010','POPESTIMATE2011'].agg({'avg': np.average, 'sum': np.sum})
+
+# type(df.set_index('STNAME').groupby(level=0)['CENSUS2010POP']), with out: pandas.core.groupby.generic.SeriesGroupBy
+df.set_index('STNAME').groupby(level=0)['CENSUS2010POP'].agg({'avg': np.average, 'sum': np.sum})
+
+df.set_index('STNAME').groupby(level=0)['POPESTIMATE2010','POPESTIMATE2011']
+    .agg({'POPESTIMATE2010': np.average, 'POPESTIMATE2011': np.sum})
+
+# In df.groupby, The <level> flag specifies the first index of the Dataframe. When you have multiple indices and you need to groupby only one index of those multiple indices of the dataframe we use it.
+
+# *****************************************************
+# ************ Date Functionality in Pands ************
+# ***************************************************** 
+
+t1 = pd.Series(list('abc'), [pd.Timestamp('2016-09-01'), pd.Timestamp('2016-09-02'), pd.Timestamp('2016-09-03')])
+
+# 2016-09-01    a
+# 2016-09-02    b
+# 2016-09-03    c
+# dtype: object
+
+t2 = pd.Series(list('def'), [pd.Period('2016-09'), pd.Period('2016-10'), pd.Period('2016-11')])
+
+# 2016-09    d
+# 2016-10    e
+# 2016-11    f
+# Freq: M, dtype: object
+
+dates = pd.date_range('10-01-2016', periods=9, freq='2W-SUN')
+
+#DatetimeIndex(['2016-10-02', '2016-10-16', '2016-10-30', '2016-11-13',
+#               '2016-11-27', '2016-12-11', '2016-12-25', '2017-01-08',
+#               '2017-01-22'],
+#              dtype='datetime64[ns]', freq='2W-SUN')
+
+# How to convert to Datatime
+pd.to_datetime('2 June 2013')
+# Timestamp('2013-06-02 00:00:00')
+
+pd.Timestamp('9/3/2016')-pd.Timestamp('9/1/2016')
+# Timedelta('2 days 00:00:00')
+
+pd.to_datetime('2 June 2013').weekday_name
