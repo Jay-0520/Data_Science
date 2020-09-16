@@ -16,13 +16,18 @@ df = pd.DataFrame([np.random.normal(32000,200000,3650),
 
 
 mean_val = df.mean(axis=1).values
-# confidence interval, 1.96 comes from the fact we want 95% confidence interval (z* value)
-# http://www.dummies.com/education/math/statistics/how-to-calculate-a-confidence-interval-for-a-population-mean-when-you-know-its-standard-deviation/
+# confidence interval, 1.96 comes from the fact we want 95% 
+# confidence interval (z* value)
+# http://www.dummies.com/education/math/statistics/how-to-
+# calculate-a-confidence-interval-for-a-population-mean-when-
+# you-know-its-standard-deviation/
 confd_val = 1.96 * (std_val / math.sqrt(len(df.columns)))
 confd_val
 
 # Easiest option:
-# Implement the bar coloring as described above - a color scale with only three colors, (e.g. blue, white, and red). Assume the user provides the y axis value of interest as a parameter or variable.
+# Implement the bar coloring as described above - a color scale with 
+# only three colors, (e.g. blue, white, and red). Assume the user 
+# provides the y axis value of interest as a parameter or variable.
 
 cutoff = 42500
 
@@ -59,7 +64,12 @@ ax1.xaxis.set_major_locator(ticker.FixedLocator(majors))
 ax1.axhline(y=cutoff, color='grey', linestyle='--')
 
 #Harder option:
-#Implement the bar coloring as described in the paper, where the color of the bar is actually based on the amount of data covered (e.g. a gradient ranging from dark blue for the distribution being certainly below this y-axis, to white if the value is certainly contained, to dark red if the value is certainly not contained as the distribution is above the axis).
+# Implement the bar coloring as described in the paper, where 
+# the color of the bar is actually based on the amount of data 
+# covered (e.g. a gradient ranging from dark blue for the distribution 
+# being certainly below this y-axis, to white if the value is certainly  
+# contained, to dark red if the value is certainly not contained as the 
+# distribution is above the axis).
  
 from matplotlib import cm
 from matplotlib.cm import ScalarMappable
