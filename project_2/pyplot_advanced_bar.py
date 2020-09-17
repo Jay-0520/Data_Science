@@ -88,7 +88,7 @@ up_bound = mean_val + confd_val
 lower_bound = mean_val - confd_val
 confd_length = confd_val*2
 cutoff = 42500
-fraction = Norm((up_bound - cutoff)/confd_length)
+fraction = (up_bound - cutoff)/confd_length
 x_sticks=['1992','1993','1994','1995']
 
 
